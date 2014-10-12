@@ -149,7 +149,7 @@ public class TestSNOMEDCTExpressionParser {
 					+ UUID.randomUUID()));
 
 			// translate SCT expression syntax to OWL
-			OWLClassExpression e = owlBuilder.translateToOWL(
+			OWLClassExpression e = owlBuilder.translateToOWLClassExpression(
 					(Tree) result.getTree(), null);
 
 			List<OWLOntologyChange> axiomList = new LinkedList<OWLOntologyChange>();

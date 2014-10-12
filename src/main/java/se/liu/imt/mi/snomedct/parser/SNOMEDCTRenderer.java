@@ -162,6 +162,9 @@ public class SNOMEDCTRenderer extends AbstractOWLRenderer {
 							+ expressionClass.getClassExpressionType()
 									.toString());
 
+		// write "===" for fully defined (or equivalent classes axiom)
+		localWriter.write("===");
+
 		// typically there will be an intersection of classes at the top of the
 		// OWL expression
 		if (expressionDefinition.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF)
@@ -178,9 +181,6 @@ public class SNOMEDCTRenderer extends AbstractOWLRenderer {
 					"Non-allowed expression type in equivalence axiom: "
 							+ expressionDefinition.getClassExpressionType()
 									.toString());
-
-		// write "F" for fully defined (or equivalent classes axiom)
-		localWriter.write("\tF");
 
 		// write SCTID if the class has such an id, or a blank tab otherwise
 		String classIRI = ((OWLClass) expressionClass).getIRI().toString();
@@ -231,6 +231,9 @@ public class SNOMEDCTRenderer extends AbstractOWLRenderer {
 							+ expressionClass.getClassExpressionType()
 									.toString());
 
+		// write "<<<" for primitive (or subclassof axiom)
+		localWriter.write("<<<");
+
 		// typically there will be an intersection of classes at the top of the
 		// OWL expression
 		if (expressionDefinition.getClassExpressionType() == ClassExpressionType.OBJECT_INTERSECTION_OF)
@@ -247,9 +250,6 @@ public class SNOMEDCTRenderer extends AbstractOWLRenderer {
 					"Non-allowed expression type in subclassof axiom: "
 							+ expressionDefinition.getClassExpressionType()
 									.toString());
-
-		// write "P" for primitive (or subclassof axiom)
-		localWriter.write("\tP");
 
 		// write SCTID if the class has such an id, or a blank tab otherwise
 		String classIRI = ((OWLClass) expressionClass).getIRI().toString();

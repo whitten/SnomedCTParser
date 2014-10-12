@@ -10,6 +10,7 @@ import java.util.Set;
 import org.antlr.runtime.tree.Tree;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -42,6 +43,26 @@ public class SCTOWLExpressionBuilder {
 	//private OWLOntology ontology;
 	private OWLDataFactory dataFactory;
 
+	public OWLClassAxiom translateToOWLClassAxiom(Tree ast, OWLClassExpression e1,
+			Map<IRI, OWLAnnotation> labels) throws Exception {
+		if (ast != null) {
+			OWLClassExpression e2 = translateToOWLClassExpression(ast.getChild(0), labels);
+			
+			switch (ast.getType()) {
+			case se.liu.imt.mi.snomedct.expression.SCTExpressionParser.EQ_TO:
+			case se.liu.imt.mi.snomedct.expression.SCTExpressionParser.TOP_AND: {
+				return dataFactory.getOWLEquivalentClassesAxiom(e1, e2);
+			}
+			case se.liu.imt.mi.snomedct.expression.SCTExpressionParser.SC_OF: {
+				return dataFactory.getOWLSubClassOfAxiom(e1, e2);
+			}
+			default:
+				throw new Exception("Undetermined AST node type: "
+						+ ast.getType());
+			}
+		}
+		return null;
+	}
 	/**
 	 * Translates an AST from the parser to an <code>OWLClassExpression</code>.
 	 * 
@@ -50,7 +71,7 @@ public class SCTOWLExpressionBuilder {
 	 * @return An <code>OWLClassExpression</code>
 	 * @throws Exception
 	 */
-	public OWLClassExpression translateToOWL(Tree ast,
+	public OWLClassExpression translateToOWLClassExpression(Tree ast,
 			Map<IRI, OWLAnnotation> labels) throws Exception {
 		if (ast != null) {
 			switch (ast.getType()) {
@@ -63,13 +84,13 @@ public class SCTOWLExpressionBuilder {
 				if (ast.getChildCount() > 1) {
 					Set<OWLClassExpression> conceptSet = new HashSet<OWLClassExpression>();
 					for (int i = 0; i < ast.getChildCount(); i++) {
-						OWLClassExpression e = translateToOWL(ast.getChild(i),
+						OWLClassExpression e = translateToOWLClassExpression(ast.getChild(i),
 								labels);
 						conceptSet.add(e);
 					}
 					return dataFactory.getOWLObjectIntersectionOf(conceptSet);
 				} else
-					return translateToOWL(ast.getChild(0), labels);
+					return translateToOWLClassExpression(ast.getChild(0), labels);
 			}
 			case se.liu.imt.mi.snomedct.expression.SCTExpressionParser.SCTID: {
 				IRI iri = IRI.create(SCTID_IRI + ast.getText());
@@ -100,12 +121,12 @@ public class SCTOWLExpressionBuilder {
 													.getChild(0).getText()))));
 				return dataFactory.getOWLObjectSomeValuesFrom(
 						dataFactory.getOWLObjectProperty(iri),
-						translateToOWL(ast.getChild(1), labels));
+						translateToOWLClassExpression(ast.getChild(1), labels));
 			}
 			case se.liu.imt.mi.snomedct.expression.SCTExpressionParser.ROLEGROUP: {
 				return dataFactory.getOWLObjectSomeValuesFrom(dataFactory
 						.getOWLObjectProperty(IRI.create(ROLEGROUP_IRI)),
-						translateToOWL(ast.getChild(0), labels));
+						translateToOWLClassExpression(ast.getChild(0), labels));
 			}
 			default:
 				throw new Exception("Undetermined AST node type: "

@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.io.OWLParserException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -93,11 +94,11 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 		String line = reader.readLine();
 		while (line != null) {
 			// # is used for commenting out expression
-			if(line.startsWith("#")) {
+			if (line.startsWith("#")) {
 				line = reader.readLine();
 				continue;
 			}
-				
+
 			// tab separated lines
 			// tokens[0] Compositional Grammar expression
 			// tokens[1] (optional) RDFS label annotation value
@@ -105,24 +106,24 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 			// translate Compositional Grammar expression to OWl
 			Tree t;
 			Map<IRI, OWLAnnotation> annotations = new HashMap<IRI, OWLAnnotation>();
-			OWLClassExpression owlExpression = null;
-			try {
-				t = SnomedCTParser.parseExpression(tokens[0]);
-				
-				owlExpression = expressionBuilder
-						.translateToOWL(t, annotations);
-			} catch (Exception e) {
-				throw new OWLParserException(e);
-			}
 
 			// create new class for the expression, generate new IRI
 			OWLClass newExpressionClass = dataFactory.getOWLClass(IRI
 					.create(PC_IRI + expressionNumber++));
 
+			OWLClassAxiom owlAxiom = null;
+			try {
+				t = SnomedCTParser.parseAxiom(tokens[0]);
+
+				owlAxiom = expressionBuilder.translateToOWLClassAxiom(t,
+						newExpressionClass, annotations);
+			} catch (Exception e) {
+				throw new OWLParserException(e);
+			}
+
 			// add equivalence axiom to ontology
-			manager.addAxiom(ontology, dataFactory
-					.getOWLEquivalentClassesAxiom(newExpressionClass,
-							owlExpression));
+			manager.addAxiom(ontology, owlAxiom);
+
 			// if there is a label, add that too
 			if (tokens.length > 1) {
 				// create label

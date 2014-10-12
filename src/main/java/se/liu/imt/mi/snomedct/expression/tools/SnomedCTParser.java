@@ -27,6 +27,34 @@ public class SnomedCTParser {
 	 * @throws ExpressionSyntaxError
 	 * 						thrown when syntax error in expression string	
 	 */
+	public static Tree parseAxiom(String expression) throws ExpressionSyntaxError {
+		SCTExpressionParser.axiom_return parseResult = null;
+
+		// parse string and throw ExpressionSyntaxError if unparsable
+		CharStream input = new ANTLRStringStream(expression);
+		SCTExpressionLexer lexer = new SCTExpressionLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		SCTExpressionParser parser = new SCTExpressionParser(tokens);
+		try {
+			parseResult = parser.axiom();
+		} catch (Exception e) {
+			throw new ExpressionSyntaxError(e);
+		}
+		if (parseResult == null)
+			throw new ExpressionSyntaxError(
+					"Parse result is null. Should not happen ever!");
+		
+		return (Tree)parseResult.getTree();
+	}
+	
+	/**
+	 * Wrapper method for parsing an SNOMED CT expression from a string
+	 *  
+	 * @param expression	string representation of a SNOMED CT expression
+	 * @return				parse tree resulting from parsing
+	 * @throws ExpressionSyntaxError
+	 * 						thrown when syntax error in expression string	
+	 */
 	public static Tree parseExpression(String expression) throws ExpressionSyntaxError {
 		SCTExpressionParser.expression_return parseResult = null;
 
