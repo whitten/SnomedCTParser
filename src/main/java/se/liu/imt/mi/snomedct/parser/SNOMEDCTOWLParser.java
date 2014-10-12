@@ -103,8 +103,10 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 			// tokens[0] Compositional Grammar expression
 			// tokens[1] (optional) RDFS label annotation value
 			String[] tokens = line.split("\t");
-			// translate Compositional Grammar expression to OWl
-			Tree t;
+			
+			// translate Compositional Grammar axiom to OWl
+			Tree ast;
+			// labels for expression parts are kept in a map 
 			Map<IRI, OWLAnnotation> annotations = new HashMap<IRI, OWLAnnotation>();
 
 			// create new class for the expression, generate new IRI
@@ -113,15 +115,15 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 
 			OWLClassAxiom owlAxiom = null;
 			try {
-				t = SnomedCTParser.parseAxiom(tokens[0]);
+				ast = SnomedCTParser.parseAxiom(tokens[0]);
 
-				owlAxiom = expressionBuilder.translateToOWLClassAxiom(t,
+				owlAxiom = expressionBuilder.translateToOWLClassAxiom(ast,
 						newExpressionClass, annotations);
 			} catch (Exception e) {
 				throw new OWLParserException(e);
 			}
 
-			// add equivalence axiom to ontology
+			// add axiom to ontology
 			manager.addAxiom(ontology, owlAxiom);
 
 			// if there is a label, add that too
