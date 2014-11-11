@@ -5,7 +5,7 @@
 	<artifactId>SnomedCTParser</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<antlr.version>3.5.2</antlr.version>
+		<antlr.version>4.3</antlr.version>
 		<owlapi.version>3.5.0</owlapi.version>
 	</properties>
 	<build>
@@ -44,31 +44,15 @@
 			</plugin>
 			<plugin>
 				<groupId>org.antlr</groupId>
-				<artifactId>antlr3-maven-plugin</artifactId>
+				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>${antlr.version}</version>
 				<executions>
 					<execution>
 						<goals>
-							<goal>antlr</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>maven-gunit-plugin</artifactId>
-				<version>${antlr.version}</version>
-				<executions>
-					<execution>
-						<id>maven-gunit-plugin</id>
-						<phase>test</phase>
-						<goals>
-							<goal>gunit</goal>
+							<goal>antlr4</goal>
 						</goals>
 						<configuration>
-							<includes>
-								<include>**/*.gunit</include>
-							</includes>
+							<visitor></visitor>
 						</configuration>
 					</execution>
 				</executions>
@@ -103,15 +87,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
-			<artifactId>antlr-runtime</artifactId>
+			<artifactId>antlr4-runtime</artifactId>
 			<version>${antlr.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>gunit</artifactId>
-			<version>${antlr.version}</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.antlr</groupId> -->
+		<!-- <artifactId>gunit</artifactId> -->
+		<!-- <version>${antlr.version}</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
