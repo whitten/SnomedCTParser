@@ -48,11 +48,11 @@
 				<version>${antlr.version}</version>
 				<executions>
 					<execution>
-						<goals>
-							<goal>antlr4</goal>
-						</goals>
 						<configuration>
-							<visitor></visitor>
+							<goals>
+								<goal>antlr4</goal>
+							</goals>
+							<visitor />
 						</configuration>
 					</execution>
 				</executions>
@@ -120,5 +120,10 @@
 			<version>1.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
 	</dependencies>
 </project>

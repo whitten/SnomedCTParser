@@ -3,66 +3,26 @@ package test;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.StringWriter;
 import java.net.URL;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 import se.liu.imt.mi.snomedct.expression.*;
-import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionLexer;
-import se.liu.imt.mi.snomedct.expression.tools.SCTOWLExpressionBuilder;
-import se.liu.imt.mi.snomedct.expression.tools.SCTSortedExpressionBuilder;
-import se.liu.imt.mi.snomedct.expression.tools.SnomedCTParser;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxOntologyFormat;
+import se.liu.imt.mi.snomedct.parser.OWLVisitor;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.TestRig;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.InferenceType;
-import org.semanticweb.owlapi.reasoner.Node;
-import org.semanticweb.owlapi.reasoner.NodeSet;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.model.OWLObject;
 
 public class TestSNOMEDCTExpressionParser {
 
-	private OWLOntologyManager manager;
-	private OWLOntology ontology;
-	private OWLDataFactory dataFactory;
-	private OWLReasoner reasoner;
-
 	static Logger logger = Logger.getLogger(TestSNOMEDCTExpressionParser.class);
 
-	public static final String PC_IRI = "http://snomed.info/expid/";
-
-	public static final String snomedOWLFileName = "/res_StatedOWLF_Core_INT_20140131.owl";
-
 	@Before
-	public void setUp() throws OWLOntologyCreationException {
+	public void setUp() {
 
 	}
 
@@ -91,9 +51,18 @@ public class TestSNOMEDCTExpressionParser {
 		    CommonTokenStream tokens = new CommonTokenStream(lexer);
 			SNOMEDCTExpressionParser parser = new SNOMEDCTExpressionParser(tokens);
 			ParseTree tree = parser.expression();
-			
-			
+
+//			for(org.antlr.v4.runtime.Token t : tokens.getTokens())
+//				if(t.getType() > 0)
+//					logger.info(SNOMEDCTExpressionLexer.ruleNames[t.getType()] + ": " + t.getText());
 			logger.info(tree.toStringTree(parser));
+
+			OWLVisitor visitor = new OWLVisitor();
+			
+			OWLObject o = visitor.visit(tree);
+			
+			logger.info(o.toString());
+			logger.info(visitor.getLabels().toString());
 
 			//assertTrue(sortedResult.equals(strTokens[1]));
 		}
