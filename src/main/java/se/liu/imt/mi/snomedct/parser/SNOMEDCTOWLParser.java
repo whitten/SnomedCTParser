@@ -33,8 +33,7 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionLexer;
 import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionParser;
 import se.liu.imt.mi.snomedct.expression.tools.ExpressionSyntaxError;
-import se.liu.imt.mi.snomedct.expression.tools.SCTOWLExpressionBuilder;
-import se.liu.imt.mi.snomedct.expression.tools.SnomedCTParser;
+import se.liu.imt.mi.snomedct.expression.tools.SNOMEDCTParser;
 
 /**
  * @author Daniel Karlsson, Linköping University, daniel.karlsson@liu.se

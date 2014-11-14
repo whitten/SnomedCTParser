@@ -42,7 +42,7 @@ import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionParser.StatementConte
 import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionParser.SubExpressionContext;
 
 /**
- * @author daniel
+ * @author Daniel Karlsson, Linköping University, daniel.karlsson@liu.se
  *
  */
 public class OWLVisitor extends SNOMEDCTExpressionBaseVisitor<OWLObject> {
@@ -319,18 +319,21 @@ public class OWLVisitor extends SNOMEDCTExpressionBaseVisitor<OWLObject> {
 			expression = dataFactory.getOWLDataHasValue(property, literal);
 		} else // if the property filler is a string
 		if (ctx.attributeValue().start.getType() == SNOMEDCTExpressionLexer.STRING) {
-			String stringValue = StringEscapeUtils.unescapeJava(removeCharacter(ctx.attributeValue().getText(), "\""));
+			String stringValue = StringEscapeUtils
+					.unescapeJava(removeCharacter(ctx.attributeValue()
+							.getText(), "\""));
 			OWLDataProperty property = dataFactory
 					.getOWLDataProperty((IRI) visitConceptReference(ctx
 							.conceptReference()));
 			OWLLiteral literal = dataFactory.getOWLLiteral(stringValue);
 			expression = dataFactory.getOWLDataHasValue(property, literal);
-		} else // a subexpression 
-			if (ctx.attributeValue().getChild(0).getClass() == SNOMEDCTExpressionParser.NestedExpressionContext.class) {
+		} else // a subexpression
+		if (ctx.attributeValue().getChild(0).getClass() == SNOMEDCTExpressionParser.NestedExpressionContext.class) {
 			OWLObjectProperty property = dataFactory
 					.getOWLObjectProperty((IRI) visitConceptReference(ctx
 							.conceptReference()));
-			OWLClassExpression filler = (OWLClassExpression) visitSubExpression(ctx.attributeValue().nestedExpression().subExpression());
+			OWLClassExpression filler = (OWLClassExpression) visitSubExpression(ctx
+					.attributeValue().nestedExpression().subExpression());
 			expression = dataFactory.getOWLObjectSomeValuesFrom(property,
 					filler);
 		} else
@@ -363,6 +366,9 @@ public class OWLVisitor extends SNOMEDCTExpressionBaseVisitor<OWLObject> {
 	}
 
 	/*
+	 * This method does not insert attribute groups for non-grouped attributes!
+	 * TODO: remove magic transforms from Compositional Grammar specification
+	 * 
 	 * (non-Javadoc)
 	 * 
 	 * @see se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionBaseVisitor#

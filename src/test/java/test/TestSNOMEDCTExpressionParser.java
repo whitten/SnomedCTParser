@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.net.URL;
 
 import se.liu.imt.mi.snomedct.expression.*;
+import se.liu.imt.mi.snomedct.expression.tools.SNOMEDCTParser;
 import se.liu.imt.mi.snomedct.parser.OWLVisitor;
 import se.liu.imt.mi.snomedct.parser.SortedExpressionVisitor;
 
@@ -47,18 +48,12 @@ public class TestSNOMEDCTExpressionParser {
 
 			logger.info(strTokens[0]);
 
-			ANTLRInputStream input = new ANTLRInputStream(strTokens[0]);
-			SNOMEDCTExpressionLexer lexer = new SNOMEDCTExpressionLexer(input);
-		    CommonTokenStream tokens = new CommonTokenStream(lexer);
-			SNOMEDCTExpressionParser parser = new SNOMEDCTExpressionParser(tokens);
-			ParseTree tree = parser.expression();
+			ParseTree tree = SNOMEDCTParser.parseExpression(strTokens[0]);
 
-			logger.info(tree.toStringTree(parser));
-
-//			OWLVisitor visitor = new OWLVisitor();			
-//			OWLObject o = visitor.visit(tree);
-//			logger.info(o.toString());
-//			logger.info(visitor.getLabels().toString());
+			OWLVisitor visitor = new OWLVisitor();			
+			OWLObject o = visitor.visit(tree);
+			logger.info(o.toString());
+			logger.info(visitor.getLabels().toString());
 			
 			SortedExpressionVisitor sortVisitor = new SortedExpressionVisitor();
 			String sortedExpression = sortVisitor.visit(tree);
