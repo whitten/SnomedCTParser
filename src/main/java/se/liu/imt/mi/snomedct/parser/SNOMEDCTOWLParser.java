@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.antlr.runtime.tree.Tree;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.semanticweb.owlapi.io.AbstractOWLParser;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.OWLParserException;
@@ -28,6 +30,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.UnloadableImportException;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
+import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionLexer;
+import se.liu.imt.mi.snomedct.expression.SNOMEDCTExpressionParser;
 import se.liu.imt.mi.snomedct.expression.tools.ExpressionSyntaxError;
 import se.liu.imt.mi.snomedct.expression.tools.SCTOWLExpressionBuilder;
 import se.liu.imt.mi.snomedct.expression.tools.SnomedCTParser;
@@ -38,7 +42,7 @@ import se.liu.imt.mi.snomedct.expression.tools.SnomedCTParser;
  */
 public class SNOMEDCTOWLParser extends AbstractOWLParser {
 
-	static final String PC_IRI = "http://snomed.info/expid/";
+	static final String PC_IRI = "http://snomed.info/postcoord/";
 
 	/*
 	 * (non-Javadoc)
@@ -84,12 +88,9 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 		OWLOntologyManager manager = ontology.getOWLOntologyManager();
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 
-		// create OWL expression builder
-		SCTOWLExpressionBuilder expressionBuilder = new SCTOWLExpressionBuilder(
-				ontology, dataFactory);
-
 		// give each expression a number starting with 0
 		int expressionNumber = 0;
+		
 		// read first line from source file
 		String line = reader.readLine();
 		while (line != null) {
@@ -104,25 +105,26 @@ public class SNOMEDCTOWLParser extends AbstractOWLParser {
 			// tokens[1] (optional) RDFS label annotation value
 			String[] tokens = line.split("\t");
 			
-			// translate Compositional Grammar axiom to OWl
-			Tree ast;
-			// labels for expression parts are kept in a map 
-			Map<IRI, OWLAnnotation> annotations = new HashMap<IRI, OWLAnnotation>();
-
 			// create new class for the expression, generate new IRI
 			OWLClass newExpressionClass = dataFactory.getOWLClass(IRI
 					.create(PC_IRI + expressionNumber++));
 
+			OWLVisitor visitor = new OWLVisitor(manager, newExpressionClass);
 			OWLClassAxiom owlAxiom = null;
 			try {
-				ast = SnomedCTParser.parseAxiom(tokens[0]);
-
-				owlAxiom = expressionBuilder.translateToOWLClassAxiom(ast,
-						newExpressionClass, annotations);
+				ANTLRInputStream input = new ANTLRInputStream(tokens[0]);
+				SNOMEDCTExpressionLexer lexer = new SNOMEDCTExpressionLexer(input);
+			    CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+				SNOMEDCTExpressionParser parser = new SNOMEDCTExpressionParser(tokenStream);
+				ParseTree tree = parser.expression();
+				owlAxiom = (OWLClassAxiom) visitor.visit(tree);
 			} catch (Exception e) {
 				throw new OWLParserException(e);
 			}
 
+			// labels for expression parts are kept in a map 
+			Map<IRI, OWLAnnotation> annotations = visitor.getLabels();
+			
 			// add axiom to ontology
 			manager.addAxiom(ontology, owlAxiom);
 

@@ -11,6 +11,23 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>${antlr.version}</version>
+				<configuration>
+					<visitor>true</visitor>
+					<listener>false</listener>
+				</configuration>
+				<executions>
+					<execution>
+
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -30,7 +47,6 @@
 							<mainClass>se.liu.imt.mi.snomedct.expression.tools.SNOMEDCTTranslator</mainClass>
 						</manifest>
 					</archive>
-
 				</configuration>
 				<executions>
 					<execution>
@@ -39,21 +55,6 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>${antlr.version}</version>
-				<executions>
-					<execution>
-						<configuration>
-							<goals>
-								<goal>antlr4</goal>
-							</goals>
-							<visitor />
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -90,12 +91,6 @@
 			<artifactId>antlr4-runtime</artifactId>
 			<version>${antlr.version}</version>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.antlr</groupId> -->
-		<!-- <artifactId>gunit</artifactId> -->
-		<!-- <version>${antlr.version}</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>

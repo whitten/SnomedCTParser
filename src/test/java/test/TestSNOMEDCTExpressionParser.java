@@ -8,6 +8,7 @@ import java.net.URL;
 
 import se.liu.imt.mi.snomedct.expression.*;
 import se.liu.imt.mi.snomedct.parser.OWLVisitor;
+import se.liu.imt.mi.snomedct.parser.SortedExpressionVisitor;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -52,19 +53,18 @@ public class TestSNOMEDCTExpressionParser {
 			SNOMEDCTExpressionParser parser = new SNOMEDCTExpressionParser(tokens);
 			ParseTree tree = parser.expression();
 
-//			for(org.antlr.v4.runtime.Token t : tokens.getTokens())
-//				if(t.getType() > 0)
-//					logger.info(SNOMEDCTExpressionLexer.ruleNames[t.getType()] + ": " + t.getText());
 			logger.info(tree.toStringTree(parser));
 
-			OWLVisitor visitor = new OWLVisitor();
+//			OWLVisitor visitor = new OWLVisitor();			
+//			OWLObject o = visitor.visit(tree);
+//			logger.info(o.toString());
+//			logger.info(visitor.getLabels().toString());
 			
-			OWLObject o = visitor.visit(tree);
-			
-			logger.info(o.toString());
-			logger.info(visitor.getLabels().toString());
+			SortedExpressionVisitor sortVisitor = new SortedExpressionVisitor();
+			String sortedExpression = sortVisitor.visit(tree);
+			logger.info(sortedExpression);
 
-			//assertTrue(sortedResult.equals(strTokens[1]));
+			assertTrue(sortedExpression.equals(strTokens[1]));
 		}
 
 		testCaseReader.close();
